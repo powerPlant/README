@@ -15,19 +15,28 @@ echo "Singularity recipe files for " >> README.md
 cat > Singularity.version <<'EOF'
 Bootstrap: docker
 From: ubuntu:bionic
-
-%labels
-Maintainer eric.burgueno@plantandfood.co.nz
-Version 
+Stage: build
 
 %post
   ## Download build prerequisites
   apt-get update
-  apt-get -y install tool
+  apt-get -y install git make build-dependency1
   
-  ## Cleanup
-  apt-get -y autoremove
-  apt-get -y clean all
+  ## Build
+  cd /opt
+  git clone URL
+  make
+
+Bootstrap: docker
+From: ubuntu:bionic
+Stage: final
+
+%labels
+Maintainer @plantandfood.co.nz
+Version 
+
+%files from build
+  /opt/URL/bin/tool /usr/local/bin/
 
 %runscript
   exec tool "$@"

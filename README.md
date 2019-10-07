@@ -110,7 +110,32 @@ else
 fi
 ```
 ## Cleanup
-All images must have a cleanup section where build dependencies, package manager cache, and other artifacts are removed from the standard image.
+All images must have a cleanup section where build dependencies, package manager cache, and other artifacts are removed from the standard image. The best way to achieve this is with [Multi-Stage Builds](https://sylabs.io/guides/3.2/user-guide/definition_files.html#multi-stage-builds)
+
+For example:
+
+```
+Stage: build
+
+%post
+  ## Download build prerequisites
+  yum -y install bzip2-devel gcc gcc-c++ git make xz-devel zlib-devel
+
+  ## Build
+  cd /opt
+  git clone --recursive https://github.com/walaj/svaba
+  cd svaba
+  git checkout c0fecb6
+  ./configure
+  make
+(...)
+Stage: final
+
+%files from build
+  /opt/svaba/src/svaba/svaba /usr/local/bin
+```
+
+If Multi-Stage Builds cannot be used for whatever reason, you **must** add a manual clean up section.
 
 For example:
 
@@ -126,6 +151,7 @@ make install
 (...)
 # Cleanup
 yum -y erase git gcc make
+yum -y autoremove
 yum -y clean all
 ```
 
