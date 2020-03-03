@@ -43,10 +43,10 @@ Version
 
 ==OR==
 
-if [ $# -eq 0 ]; then
-  /bin/echo -e "This Singularity image cannot provide a single entrypoint. Please use \"$SINGULARITY_NAME <cmd>\" or \"singularity exec $SINGULARITY_NAME <cmd>\", where <cmd> is one of the following:\n"
-  exec ls /usr/local/bin
+if [ -x /usr/local/bin/$SINGULARITY_NAME ]; then
+    exec $SINGULARITY_NAME "$@"
 else
-  exec "$@"
+  /bin/echo -e "This Singularity image cannot provide a single entrypoint. Please use \"singularity exec $SINGULARITY_NAME <cmd>\", where <cmd> is one of the following:\n"
+  exec ls /usr/local/bin
 fi
 EOF

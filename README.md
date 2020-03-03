@@ -88,15 +88,27 @@ Some software tools do not provide a single binary that can be used as the conta
 
 ```
 %runscript
-if [ $# -eq 0 ]; then
-  /bin/echo -e "This Singularity image cannot provide a single entrypoint. Please use \"$SINGULARITY_NAME <cmd>\" or \"singularity exec $SINGULARITY_NAME <cmd>\", where <cmd> is one of the following:\n"
-  exec ls /usr/local/bin
+if [ -x /usr/local/bin/$SINGULARITY_NAME ]; then
+    exec $SINGULARITY_NAME "$@"
 else
-  exec "$@"
+  /bin/echo -e "This Singularity image cannot provide a single entrypoint. Please use \"singularity exec $SINGULARITY_NAME <cmd>\", where <cmd> is one of the following:\n"
+  exec ls /usr/local/bin
 fi
 ```
 
-NOTE: The block above assumes that `/usr/local/bin` only contains the binaries provided by the tool. You can generate this list in other ways if this approach does not suit.
+Notice the use of `$SINGULARITY_NAME`. This variable stores the name of the calling executable, which is typically the name of the image file. We can take advantage of it by creating symlinks to the container image with the names of the executables that the image provides. For example:
+
+```
+$ ll
+total 109760
+lrwxrwxrwx. 1 appiarium appiarium       17 Mar  4 10:48 cluster_gff -> pinfish-0.1.0.sif
+lrwxrwxrwx. 1 appiarium appiarium       17 Mar  4 10:48 collapse_partials -> pinfish-0.1.0.sif
+-rwxr-xr-x. 1 appiarium appiarium 83996672 Mar  4 10:41 pinfish-0.1.0.sif
+lrwxrwxrwx. 1 appiarium appiarium       17 Mar  4 10:48 polish_clusters -> pinfish-0.1.0.sif
+lrwxrwxrwx. 1 appiarium appiarium       17 Mar  4 10:48 spliced_bam2gff -> pinfish-0.1.0.sif
+```
+
+NOTE: The block above assumes that `/usr/local/bin` contains the binaries provided by the tool. You can generate this list in other ways if this approach does not suit.
 
 ### Dealing with bind-mounted data
 Some software requires large read databases to be present in some predefined or user-configurable location. **Large datasets should not be included with the container image**. Instead, use the `%runscript` to advise the user how to bind mount it from their host system. For example:
