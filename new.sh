@@ -14,7 +14,7 @@ hub create -d "Singularity recipe files for $1 (${2})" powerPlant/${1,,}-srf
 echo "Singularity recipe files for " >> README.md
 cat > Singularity.version <<'EOF'
 Bootstrap: docker
-From: ubuntu:bionic
+From: ubuntu:jammy
 Stage: build
 
 %post
@@ -28,7 +28,7 @@ Stage: build
   make
 
 Bootstrap: docker
-From: ubuntu:bionic
+From: ubuntu:jammy
 Stage: final
 
 %labels
