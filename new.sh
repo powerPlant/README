@@ -28,7 +28,7 @@ Stage: build
   make
 
 Bootstrap: docker
-From: ubuntu:bionic
+From: ubuntu:focal
 Stage: final
 
 %labels
