@@ -10,9 +10,9 @@ fi
 
 git init ${1,,}-srf
 cd ${1,,}-srf
-hub create -d "Singularity recipe files for $1 (${2})" powerPlant/${1,,}-srf
-echo "Singularity recipe files for " >> README.md
-cat > Singularity.version <<'EOF'
+hub create -d "Apptainer recipe files for $1 (${2})" powerPlant/${1,,}-srf
+echo "Apptainer recipe files for " >> README.md
+cat > Apptainer.version <<'EOF'
 Bootstrap: docker
 From: ubuntu:jammy
 Stage: build
@@ -43,10 +43,10 @@ Version
 
 ==OR==
 
-if [ -x /usr/local/bin/$SINGULARITY_NAME ]; then
-    exec $SINGULARITY_NAME "$@"
+if [ -x /usr/local/bin/$APPTAINER_NAME ]; then
+    exec $APPTAINER_NAME "$@"
 else
-  /bin/echo -e "This Singularity image cannot provide a single entrypoint. Please use \"singularity exec $SINGULARITY_NAME <cmd>\", where <cmd> is one of the following:\n"
+  /bin/echo -e "This Apptainer image cannot provide a single entrypoint. Please use \"apptainer exec $APPTAINER_NAME <cmd>\", where <cmd> is one of the following:\n"
   exec ls /usr/local/bin
 fi
 EOF
